@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Loto 7 — Takarakuji Japão</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Zen+Old+Mincho:wght@500;700;900&family=Zen+Kaku+Gothic+New:wght@400;500;700&family=JetBrains+Mono:wght@500;700&display=swap');
+:root{
+  --washi:#EAE6D9; --washi-dark:#DFD9C8; --paper:#F7F3E8;
+  --sumi:#23283A; --kon:#33456F; --kin:#C69A3B; --hanko:#B23A2E;
+}
+*{box-sizing:border-box;}
+body{margin:0;background:var(--washi);font-family:'Zen Kaku Gothic New',sans-serif;color:var(--sumi);}
+.l7-display{font-family:'Zen Old Mincho',serif;}
+.l7-mono{font-family:'JetBrains Mono',monospace;}
+.wrap{max-width:56rem;margin:0 auto;padding:0 1.25rem;}
+header{padding-top:2.5rem;padding-bottom:1.25rem;}
+.header-row{display:flex;align-items:flex-start;justify-content:space-between;gap:1.25rem;flex-wrap:wrap;}
+h1{font-size:2.5rem;font-weight:700;margin:0;color:var(--sumi);}
+h1 .accent{color:var(--hanko);}
+.subtitle{font-size:.875rem;margin:.25rem 0 0;color:var(--kon);}
+.updated{font-size:.75rem;margin:.5rem 0 0;letter-spacing:.05em;text-transform:uppercase;color:var(--hanko);}
+.desc{max-width:26rem;font-size:.875rem;margin-top:.75rem;color:var(--kon);line-height:1.5;}
+.seal{width:4.5rem;height:4.5rem;border-radius:50%;border:3px solid var(--hanko);color:var(--hanko);
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;font-weight:700;font-size:1.4rem;
+  transform:rotate(-6deg);font-family:'Zen Old Mincho',serif;}
+.lang-switch{font-size:.75rem;margin-top:.6rem;color:var(--kon);}
+.lang-link{color:var(--kon);text-decoration:underline;cursor:pointer;}
+.lang-current{font-weight:700;color:var(--sumi);}
+.lang-sep{margin:0 .4rem;opacity:.5;}
+.tabs{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:1.5rem;}
+.tab-btn{padding:.5rem 1rem;border-radius:999px;font-size:.875rem;display:flex;align-items:center;gap:.4rem;
+  border:1.5px solid var(--sumi);background:transparent;color:var(--sumi);cursor:pointer;font-family:inherit;}
+.tab-btn.active{background:var(--sumi);color:var(--paper);}
+.tab-btn:focus-visible{outline:2px solid var(--hanko);outline-offset:2px;}
+main{padding-bottom:1.5rem;}
+.tab-panel{display:none;}
+.tab-panel.active{display:block;}
+.row-between{display:flex;align-items:center;justify-content:space-between;gap:.75rem;flex-wrap:wrap;margin-bottom:1rem;}
+.pill-group{display:flex;gap:.5rem;flex-wrap:wrap;}
+.pill{padding:.35rem .9rem;border-radius:999px;font-size:.75rem;border:1.5px solid var(--kon);background:transparent;
+  color:var(--kon);cursor:pointer;font-family:inherit;}
+.pill.active{background:var(--kon);color:var(--paper);}
+.pill.danger{border-color:var(--hanko);color:var(--hanko);}
+.pill.danger.active{background:var(--hanko);color:var(--paper);}
+.pill-gold{background:var(--kin);color:var(--sumi);border:none;font-weight:500;}
+.card{background:var(--paper);border:1px solid rgba(35,40,58,.13);border-radius:1rem;padding:1.25rem;}
+.card-lg{padding:1.5rem;}
+@media(min-width:640px){.card-lg{padding:1.75rem;}}
+.form-title{font-size:1.15rem;margin:0 0 .75rem;color:var(--sumi);}
+.form-grid{display:grid;grid-template-columns:1fr;gap:.75rem;margin-bottom:.75rem;}
+@media(min-width:640px){.form-grid{grid-template-columns:1fr 1fr;}}
+.form-grid label{font-size:.75rem;color:var(--kon);display:block;}
+.form-grid input{margin-top:.25rem;width:100%;padding:.5rem .75rem;border-radius:.5rem;font-size:.875rem;
+  border:1.5px solid rgba(35,40,58,.2);background:var(--washi);color:var(--sumi);font-family:inherit;}
+.col-span-2{grid-column:1/-1;}
+.form-error{font-size:.75rem;color:var(--hanko);margin:0 0 .75rem;}
+.btn-primary{padding:.5rem 1.25rem;border-radius:999px;font-size:.875rem;font-weight:500;border:none;
+  background:var(--sumi);color:var(--paper);cursor:pointer;font-family:inherit;}
+.form-help{font-size:.75rem;margin-top:.75rem;color:rgba(51,69,111,.75);}
+.table-wrap{border-radius:1rem;overflow:hidden;border:1px solid rgba(35,40,58,.13);}
+.table-scroll{overflow-x:auto;}
+table{width:100%;font-size:.875rem;border-collapse:collapse;min-width:640px;}
+thead tr{background:var(--sumi);color:var(--paper);}
+th{text-align:left;font-weight:600;padding:.6rem .75rem;font-size:.75rem;}
+td{padding:.5rem .75rem;white-space:nowrap;}
+td.notes-cell{white-space:normal;font-size:.75rem;color:var(--kon);}
+.row-even{background:var(--paper);} .row-odd{background:var(--washi-dark);}
+.badge-new{margin-left:.4rem;font-size:.7rem;padding:.1rem .4rem;border-radius:999px;background:rgba(198,154,59,.27);color:var(--sumi);}
+.del-btn{background:none;border:none;color:var(--hanko);cursor:pointer;padding:.2rem;border-radius:999px;}
+.gap-row td{padding:.4rem .75rem;font-size:.75rem;background:rgba(178,58,46,.055);color:var(--hanko);}
+.note-below{font-size:.75rem;margin-top:.75rem;color:rgba(51,69,111,.75);}
+.fetch-error{display:none;background:rgba(178,58,46,.1);border:1px solid var(--hanko);color:var(--hanko);
+  padding:.75rem 1rem;border-radius:.75rem;font-size:.8rem;margin-bottom:1rem;line-height:1.5;}
+.stats-head{font-size:1.25rem;margin:0 0 .2rem;color:var(--sumi);}
+.stats-sub{font-size:.875rem;margin:0 0 .5rem;color:var(--kon);}
+.legend{display:flex;align-items:center;gap:1rem;font-size:.75rem;margin-bottom:.75rem;color:var(--kon);}
+.legend span{display:inline-flex;align-items:center;gap:.35rem;}
+.dot{width:.6rem;height:.6rem;border-radius:50%;display:inline-block;}
+.chart-svg{width:100%;height:210px;display:block;}
+.grid2{display:grid;grid-template-columns:1fr;gap:1rem;}
+@media(min-width:640px){.grid2{grid-template-columns:1fr 1fr;}}
+.subcard-title{font-size:1.05rem;margin:0 0 .2rem;display:flex;align-items:center;gap:.4rem;}
+.subcard-sub{font-size:.75rem;margin:0 0 .75rem;color:var(--kon);}
+.ball-row{display:flex;flex-wrap:wrap;gap:.5rem;}
+.ball-item{display:flex;flex-direction:column;align-items:center;gap:.2rem;}
+.ball{border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--paper);
+  box-shadow:0 1px 3px rgba(0,0,0,.15);border:2px solid rgba(35,40,58,.13);flex-shrink:0;}
+.ball-lg{width:2.9rem;height:2.9rem;font-size:1rem;}
+.ball-sm{width:2.2rem;height:2.2rem;font-size:.8rem;}
+.ball-main{background:var(--kon);} .ball-bonus{background:var(--kin);}
+.ball-freq{font-size:.7rem;color:var(--kon);}
+@keyframes l7drop{0%{transform:translateY(-34px) scale(.5);opacity:0;}65%{transform:translateY(5px) scale(1.06);opacity:1;}100%{transform:translateY(0) scale(1);opacity:1;}}
+.drop{animation:l7drop .5s cubic-bezier(.34,1.56,.64,1) both;}
+@media(prefers-reduced-motion:reduce){.drop{animation:none;}}
+.gen-title{font-size:1.25rem;margin:0 0 .2rem;color:var(--sumi);}
+.gen-sub{font-size:.875rem;margin:0 0 1rem;color:var(--kon);}
+.mode-row{display:flex;flex-wrap:wrap;gap:.5rem;margin-bottom:1.25rem;}
+.gen-btn{width:100%;padding:.75rem 1.75rem;border-radius:999px;font-size:.875rem;font-weight:700;letter-spacing:.03em;
+  border:none;background:var(--kin);color:var(--sumi);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:.5rem;font-family:inherit;}
+@media(min-width:640px){.gen-btn{width:auto;}}
+.combo-wrap{margin-top:1.5rem;}
+.balls-line{display:flex;flex-wrap:wrap;align-items:center;gap:.6rem;margin-bottom:1rem;}
+.divider{width:1px;height:2.25rem;background:rgba(35,40,58,.2);margin:0 .35rem;}
+.action-row{display:flex;flex-wrap:wrap;gap:.5rem;}
+.ghost-btn{padding:.5rem 1rem;border-radius:999px;font-size:.75rem;border:1.5px solid var(--kon);background:transparent;
+  color:var(--kon);cursor:pointer;display:flex;align-items:center;gap:.4rem;font-family:inherit;}
+.ghost-btn.done{background:var(--kon);color:var(--paper);}
+.saved-section{margin-top:1.75rem;padding-top:1.25rem;border-top:1px dashed rgba(35,40,58,.2);}
+.saved-title{font-size:1rem;margin:0 0 .75rem;color:var(--sumi);}
+.saved-empty{font-size:.8rem;color:rgba(51,69,111,.75);}
+.saved-item{display:flex;align-items:center;gap:.6rem;flex-wrap:wrap;padding:.5rem 0;border-top:1px dashed rgba(35,40,58,.13);}
+.saved-item:first-child{border-top:none;}
+.saved-tag{font-size:.7rem;padding:.15rem .5rem;border-radius:999px;background:rgba(51,69,111,.09);color:var(--kon);}
+.saved-nums{font-family:'JetBrains Mono',monospace;font-size:.8rem;}
+.saved-del{margin-left:auto;background:none;border:none;color:var(--hanko);cursor:pointer;padding:.2rem;}
+.disclaimer{margin-top:1.5rem;padding-top:1rem;border-top:1px dashed rgba(35,40,58,.2);font-size:.75rem;
+  line-height:1.6;color:rgba(51,69,111,.8);}
+footer{padding:1.5rem 0 3rem;border-top:1px dashed rgba(35,40,58,.2);margin-top:.5rem;}
+footer p{font-size:.75rem;line-height:1.6;color:rgba(51,69,111,.75);}
+.storage-msg{font-size:.75rem;margin-top:.75rem;padding:.5rem .75rem;border-radius:.5rem;background:rgba(178,58,46,.1);color:var(--hanko);display:none;}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div class="header-row">
+    <div>
+      <h1 class="l7-display">Loto 7 <span class="accent">七</span></h1>
+      <p class="subtitle">Takarakuji • Japão</p>
+      <p class="updated" id="updated-line" style="display:none"></p>
+      <p class="desc">Consulte os sorteios da Loto 7 japonesa de janeiro de 2025 até hoje. Analise frequências e gere palpites. 7 números principais + 2 bônus.</p>
+      <p class="lang-switch">Idioma: <span class="lang-current">PT</span><span class="lang-sep">·</span><a class="lang-link" href="en.html">EN</a><span class="lang-sep">·</span><a class="lang-link" href="ja.html">日本語</a></p>
+    </div>
+    <div class="seal l7-display">L7</div>
+  </div>
+  <div class="tabs" role="tablist">
+    <button class="tab-btn active" data-tab="table" type="button"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><path d="M3 3h18v18H3z"/><path d="M3 9h18M3 15h18M9 3v18"/></svg> Tabela de Resultados</button>
+    <button class="tab-btn" data-tab="stats" type="button"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><path d="M3 3v18h18"/><path d="M18 17V9M13 17V5M8 17v-4"/></svg> Estatísticas</button>
+    <button class="tab-btn" data-tab="generator" type="button"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8" cy="8" r="1.2"/><circle cx="16" cy="16" r="1.2"/><circle cx="12" cy="12" r="1.2"/></svg> Gerador de Palpites</button>
+  </div>
+  <p class="storage-msg" id="storage-msg"></p>
+</header>
+
+<main>
+  <div class="fetch-error" id="fetch-error">Não foi possível carregar data/draws.json. Se você abriu este arquivo diretamente (file://), rode um servidor local (ex.: "python3 -m http.server") ou publique no GitHub Pages.</div>
+
+  <!-- ===== TABLE TAB ===== -->
+  <section class="tab-panel active" id="tab-table">
+    <div class="row-between">
+      <div class="pill-group" id="year-filters">
+        <button class="pill active" data-year="all" type="button">Todos os anos</button>
+        <button class="pill" data-year="2025" type="button">2025</button>
+        <button class="pill" data-year="2026" type="button">2026</button>
+      </div>
+      <div class="pill-group">
+        <button class="pill danger" id="clear-btn" type="button" style="display:none"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14"/></svg> Limpar</button>
+        <button class="pill pill-gold" id="toggle-form-btn" type="button"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><path d="M12 5v14M5 12h14"/></svg> Adicionar Novo</button>
+      </div>
+    </div>
+
+    <div class="card" id="add-form" style="display:none;margin-bottom:1.25rem;">
+      <h3 class="form-title l7-display">Novo resultado</h3>
+      <div class="form-grid">
+        <label>Data do sorteio<input type="date" id="f-date"></label>
+        <label>Nº do sorteio (ex.: 683)<input type="number" id="f-no" placeholder="683" class="l7-mono"></label>
+        <label>7 números principais (separados por espaço)<input type="text" id="f-main" placeholder="03 07 12 19 24 30 36" class="l7-mono"></label>
+        <label>2 números bônus<input type="text" id="f-bonus" placeholder="05 21" class="l7-mono"></label>
+        <label class="col-span-2">Observações (opcional)<input type="text" id="f-obs" placeholder="Ex.: 1 vencedor · carry-over"></label>
+      </div>
+      <p class="form-error" id="form-error" style="display:none"></p>
+      <button class="btn-primary" id="save-draw-btn" type="button">Salvar resultado</button>
+      <p class="form-help">Resultados adicionados ficam salvos no seu navegador e entram nas estatísticas e no gerador.</p>
+    </div>
+
+    <div class="table-wrap">
+      <div class="table-scroll">
+        <table>
+          <thead><tr>
+            <th>Data</th><th>Sorteio</th><th>Números Principais</th><th>Bônus</th><th>Observações</th><th></th>
+          </tr></thead>
+          <tbody id="table-body"><tr><td colspan="6" style="padding:.75rem;font-size:.8rem;color:var(--kon)">Carregando resultados salvos…</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+    <p class="note-below">Base conferida em múltiplas fontes · confirme sempre no site oficial (Mizuho Bank / takarakuji-official.jp) antes de qualquer uso prático.</p>
+  </section>
+
+  <!-- ===== STATS TAB ===== -->
+  <section class="tab-panel" id="tab-stats">
+    <div class="card card-lg" style="margin-bottom:1.5rem;">
+      <h2 class="stats-head l7-display">Frequência dos Números</h2>
+      <p class="stats-sub" id="stats-sub"></p>
+      <div class="legend">
+        <span><span class="dot" style="background:var(--hanko)"></span>mais sorteado</span>
+        <span><span class="dot" style="background:rgba(51,69,111,.33)"></span>menos sorteado</span>
+      </div>
+      <svg class="chart-svg" id="chart-svg" viewBox="0 0 740 210" preserveAspectRatio="none"></svg>
+    </div>
+    <div class="grid2">
+      <div class="card">
+        <h3 class="subcard-title l7-display" style="color:var(--hanko)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"></svg> Números Quentes</h3>
+        <p class="subcard-sub">Mais sorteados</p>
+        <div class="ball-row" id="hot-balls"></div>
+      </div>
+      <div class="card">
+        <h3 class="subcard-title l7-display" style="color:var(--kon)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"></svg> Números Frios</h3>
+        <p class="subcard-sub">Menos sorteados</p>
+        <div class="ball-row" id="cold-balls"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== GENERATOR TAB ===== -->
+  <section class="tab-panel" id="tab-generator">
+    <div class="card card-lg">
+      <h2 class="gen-title l7-display">Gerador de Palpites</h2>
+      <p class="gen-sub">Gere combinações para a Loto 7 — 7 números principais + 2 bônus.</p>
+      <div class="mode-row" id="mode-row">
+        <button class="pill active" data-mode="crypto" type="button">Aleatório seguro</button>
+        <button class="pill" data-mode="hot" type="button">Baseado em quentes</button>
+      </div>
+      <button class="gen-btn" id="generate-btn" type="button"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><path d="M21 12a9 9 0 1 1-3-6.7"/><path d="M21 3v6h-6"/></svg> GERAR NOVA COMBINAÇÃO</button>
+
+      <div class="combo-wrap" id="combo-wrap" style="display:none">
+        <div class="balls-line" id="combo-balls"></div>
+        <div class="action-row">
+          <button class="ghost-btn" id="copy-btn" type="button"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"></svg> <span id="copy-label">Copiar números</span></button>
+          <button class="ghost-btn" id="save-pick-btn" type="button"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"></svg> <span id="save-pick-label">Salvar este palpite</span></button>
+        </div>
+      </div>
+
+      <div class="saved-section">
+        <h3 class="saved-title l7-display">Meus palpites salvos</h3>
+        <div id="saved-list"><p class="saved-empty">Nenhum palpite salvo ainda — gere uma combinação e clique em "Salvar este palpite".</p></div>
+      </div>
+
+      <div class="disclaimer" id="disclaimer"></div>
+    </div>
+  </section>
+</main>
+
+<footer><p>A probabilidade real do 1º prêmio da Loto 7 é sempre 1 em 10.295.472, qualquer que seja a combinação. Ferramenta estatística e recreativa · jogue com responsabilidade.</p></footer>
+</div>
+
+<script>
+const LANG = "pt";
+const S = {"htmlLang":"pt-BR","title":"Loto 7 — Takarakuji Japão","headerTitle":"Loto 7","kanjiAccent":"七","subtitle":"Takarakuji • Japão","seal":"L7","updatedThrough":"Atualizado até ","description":"Consulte os sorteios da Loto 7 japonesa de janeiro de 2025 até hoje. Analise frequências e gere palpites. 7 números principais + 2 bônus.","tabs":{"table":"Tabela de Resultados","stats":"Estatísticas","generator":"Gerador de Palpites"},"yearAll":"Todos os anos","clear":"Limpar","confirmClear":"Confirmar limpeza?","addNew":"Adicionar Novo","close":"Fechar","formTitle":"Novo resultado","formDate":"Data do sorteio","formNo":"Nº do sorteio (ex.: 683)","formMain":"7 números principais (separados por espaço)","formBonus":"2 números bônus","formObs":"Observações (opcional)","formObsPh":"Ex.: 1 vencedor · carry-over","formSave":"Salvar resultado","formHelp":"Resultados adicionados ficam salvos no seu navegador e entram nas estatísticas e no gerador.","err":{"date":"Informe a data do sorteio.","no":"Informe o número do sorteio (ex.: 683).","mainCount":"Números principais: exatamente 7 números entre 1 e 37.","mainDup":"Números principais não podem se repetir.","bonusCount":"Bônus: exatamente 2 números entre 1 e 37.","bonusDup":"Bônus não podem se repetir nem coincidir com os principais.","dup":(no) => `O sorteio nº ${no} já está na tabela.`},"th":{"date":"Data","draw":"Sorteio","main":"Números Principais","bonus":"Bônus","notes":"Observações"},"newBadge":"novo","loading":"Carregando resultados salvos…","gap":(a, b) => `Lacuna: sorteios ${a}–${b} não incluídos — confira na fonte oficial ou adicione manualmente`,"sourceNote":"Base conferida em múltiplas fontes · confirme sempre no site oficial (Mizuho Bank / takarakuji-official.jp) antes de qualquer uso prático.","statsTitle":"Frequência dos Números","statsSub":(n) => `Aparições nos 7 números principais · ${n} sorteios · 1 — 37`,"mostDrawn":"mais sorteado","leastDrawn":"menos sorteado","hotTitle":"Números Quentes","hotSub":"Mais sorteados","coldTitle":"Números Frios","coldSub":"Menos sorteados","timesSuffix":"×","genTitle":"Gerador de Palpites","genSub":"Gere combinações para a Loto 7 — 7 números principais + 2 bônus.","modeCrypto":"Aleatório seguro","modeHot":"Baseado em quentes","generateBtn":"GERAR NOVA COMBINAÇÃO","copyBtn":"Copiar números","copiedBtn":"Copiado!","saveBtn":"Salvar este palpite","savedDoneBtn":"Palpite salvo!","savedListTitle":"Meus palpites salvos","savedListEmpty":"Nenhum palpite salvo ainda — gere uma combinação e clique em \"Salvar este palpite\".","savedModeCrypto":"aleatório","savedModeHot":"quentes","savedDeleteAria":"Excluir palpite salvo","disclaimerCrypto":"Este gerador utiliza números aleatórios criptograficamente seguros do navegador (crypto.getRandomValues). Não utiliza dados de sorteios passados para \"prever\" resultados — algo impossível em loterias justas.","disclaimerHot":(n) => `Modo "Baseado em quentes": os números mais frequentes no histórico (${n} sorteios) recebem mais peso no sorteio simulado. Importante: isso não aumenta a chance real de ganhar — cada sorteio é independente e todos os números têm a mesma probabilidade.`,"footerText":"A probabilidade real do 1º prêmio da Loto 7 é sempre 1 em 10.295.472, qualquer que seja a combinação. Ferramenta estatística e recreativa · jogue com responsabilidade.","fetchError":"Não foi possível carregar data/draws.json. Se você abriu este arquivo diretamente (file://), rode um servidor local (ex.: \"python3 -m http.server\") ou publique no GitHub Pages.","langLabel":"Idioma","dateFmt":(iso) => { const [y, m, d] = iso.split('-'); return `${d}/${m}/${y}`; },"mainLabel":"Principais","bonusLabel":"Bônus"};
+const COLORS = {"washi":"#EAE6D9","washiDark":"#DFD9C8","paper":"#F7F3E8","sumi":"#23283A","kon":"#33456F","kin":"#C69A3B","hanko":"#B23A2E"};
+const ALL_NUMS = Array.from({length:37}, (_,i)=>i+1);
+const USER_DRAWS_KEY = "loto7:user_draws:" + LANG;
+const SAVED_PICKS_KEY = "loto7:saved_picks:" + LANG;
+
+let BASE_DRAWS = [];
+let userDraws = [];
+let savedPicks = [];
+let yearFilter = "all";
+let genMode = "crypto";
+let currentCombo = null;
+let confirmClearArmed = false;
+
+/* ---------- storage: Claude sandbox storage when available, else localStorage ---------- */
+function hasClaudeStorage(){ return typeof window.storage !== "undefined"; }
+async function storageGet(key){
+  if (hasClaudeStorage()){
+    try { const r = await window.storage.get(key); return r ? r.value : null; } catch(e){ return null; }
+  }
+  try { return localStorage.getItem(key); } catch(e){ return null; }
+}
+async function storageSet(key, value){
+  if (hasClaudeStorage()){
+    try { await window.storage.set(key, value); return true; } catch(e){ return false; }
+  }
+  try { localStorage.setItem(key, value); return true; } catch(e){ return false; }
+}
+async function storageDelete(key){
+  if (hasClaudeStorage()){
+    try { await window.storage.delete(key); return true; } catch(e){ return false; }
+  }
+  try { localStorage.removeItem(key); return true; } catch(e){ return false; }
+}
+
+/* ---------- crypto-secure random ---------- */
+function cryptoInt(maxExclusive){
+  const range = 0x100000000, limit = range - (range % maxExclusive);
+  const a = new Uint32Array(1);
+  do { crypto.getRandomValues(a); } while (a[0] >= limit);
+  return a[0] % maxExclusive;
+}
+function cryptoFloat(){ const a = new Uint32Array(1); crypto.getRandomValues(a); return a[0]/0x100000000; }
+function pickUniform(arr, qty){
+  const pool=[...arr], out=[];
+  for(let i=0;i<qty;i++){ const idx=cryptoInt(pool.length); out.push(pool[idx]); pool.splice(idx,1); }
+  return out;
+}
+function pickWeighted(pool, weights, qty){
+  const p=[...pool], w=weights.map(x=>Math.max(x,0.01)), out=[];
+  for(let k=0;k<qty;k++){
+    const total=w.reduce((a,b)=>a+b,0);
+    let r=cryptoFloat()*total, idx=0;
+    while(idx<w.length-1 && r>w[idx]){ r-=w[idx]; idx++; }
+    out.push(p[idx]); p.splice(idx,1); w.splice(idx,1);
+  }
+  return out;
+}
+
+/* ---------- helpers ---------- */
+const pad2 = n => String(n).padStart(2,"0");
+const parseNums = txt => txt.trim().split(/[\s,;、]+/).filter(Boolean).map(Number);
+function computeStats(draws){
+  const freq={}, freqBonus={};
+  ALL_NUMS.forEach(n=>{freq[n]=0; freqBonus[n]=0;});
+  draws.forEach(dr=>{ dr.m.forEach(n=>freq[n]++); dr.b.forEach(n=>freqBonus[n]++); });
+  return {freq, freqBonus};
+}
+function ballHTML(n, variant, size){
+  const cls = "ball " + (size==="sm"?"ball-sm":"ball-lg") + " " + (variant==="bonus"?"ball-bonus":"ball-main") + " l7-mono";
+  return '<div class="'+cls+'">'+pad2(n)+'</div>';
+}
+
+/* ---------- data loading ---------- */
+async function loadAll(){
+  try{
+    const res = await fetch("draws.json");
+    if(!res.ok) throw new Error("bad response");
+    BASE_DRAWS = await res.json();
+  } catch(e){
+    document.getElementById("fetch-error").style.display = "block";
+    BASE_DRAWS = [];
+  }
+  const savedU = await storageGet(USER_DRAWS_KEY);
+  try { userDraws = savedU ? JSON.parse(savedU) : []; } catch(e){ userDraws = []; }
+  const savedP = await storageGet(SAVED_PICKS_KEY);
+  try { savedPicks = savedP ? JSON.parse(savedP) : []; } catch(e){ savedPicks = []; }
+  renderAll();
+}
+
+function getAllDraws(){
+  const merged = [...BASE_DRAWS, ...userDraws.map(u=>({...u, user:true}))];
+  merged.sort((a,b)=> a.d < b.d ? -1 : 1);
+  return merged;
+}
+
+/* ---------- render: table ---------- */
+function renderTable(){
+  const all = getAllDraws();
+  const lastDate = all.length ? all[all.length-1].d : null;
+  const updatedEl = document.getElementById("updated-line");
+  if(lastDate){ updatedEl.style.display="block"; updatedEl.textContent = S.updatedThrough + S.dateFmt(lastDate); }
+
+  const filtered = yearFilter==="all" ? all : all.filter(d=>d.d.startsWith(yearFilter));
+  const visible = [...filtered].reverse();
+
+  document.getElementById("clear-btn").style.display = userDraws.length>0 ? "flex" : "none";
+
+  let html = "";
+  visible.forEach((dr, idx)=>{
+    const next = visible[idx+1];
+    const rowClass = idx%2===0 ? "row-even" : "row-odd";
+    const badge = dr.user ? '<span class="badge-new">'+S.newBadge+'</span>' : "";
+    const delBtn = dr.user ? '<button class="del-btn" data-del="'+dr.n+'" type="button" aria-label="remove">'+svgIcon("x")+'</button>' : "";
+    const notes = (dr.o && dr.o[LANG]) ? dr.o[LANG] : (typeof dr.o === "string" ? dr.o : "");
+    html += '<tr class="'+rowClass+'"><td>'+S.dateFmt(dr.d)+'</td>'
+      + '<td class="l7-mono">'+dr.n+badge+'</td>'
+      + '<td class="l7-mono">'+dr.m.map(pad2).join(" ")+'</td>'
+      + '<td class="l7-mono" style="color:var(--kin);font-weight:700">'+dr.b.map(pad2).join(" ")+'</td>'
+      + '<td class="notes-cell">'+(notes || "—")+'</td>'
+      + '<td>'+delBtn+'</td></tr>';
+    if(next && (dr.n - next.n) > 1){
+      html += '<tr class="gap-row"><td colspan="6">'+S.gap(next.n+1, dr.n-1)+'</td></tr>';
+    }
+  });
+  document.getElementById("table-body").innerHTML = html || '<tr><td colspan="6" style="padding:.75rem;font-size:.8rem;color:var(--kon)">—</td></tr>';
+
+  document.querySelectorAll("[data-del]").forEach(btn=>{
+    btn.addEventListener("click", async ()=>{
+      const no = parseInt(btn.getAttribute("data-del"),10);
+      userDraws = userDraws.filter(u=>u.n!==no);
+      await storageSet(USER_DRAWS_KEY, JSON.stringify(userDraws));
+      renderAll();
+    });
+  });
+}
+
+/* ---------- render: stats ---------- */
+function renderStats(){
+  const all = getAllDraws();
+  const stats = computeStats(all);
+  document.getElementById("stats-sub").textContent = S.statsSub(all.length);
+
+  const data = ALL_NUMS.map(n=>({n, freq:stats.freq[n]}));
+  const maxFreq = Math.max(...data.map(d=>d.freq));
+  const minFreq = Math.min(...data.map(d=>d.freq));
+  const W=740, H=190, gap=2, barW = W/data.length - gap;
+  let svg = "";
+  data.forEach((d,i)=>{
+    const h = maxFreq>0 ? (d.freq/maxFreq)*H : 0;
+    const x = i*(barW+gap), y = H-h;
+    const fill = d.freq===maxFreq ? COLORS.hanko : (d.freq===minFreq ? "rgba(51,69,111,.33)" : COLORS.kin);
+    svg += '<rect x="'+x.toFixed(1)+'" y="'+y.toFixed(1)+'" width="'+barW.toFixed(1)+'" height="'+h.toFixed(1)+'" fill="'+fill+'" rx="2"></rect>';
+    if(i%3===0){ svg += '<text x="'+(x+barW/2).toFixed(1)+'" y="205" font-size="8" fill="'+COLORS.kon+'" text-anchor="middle" font-family=\'JetBrains Mono, monospace\'>'+d.n+'</text>'; }
+  });
+  document.getElementById("chart-svg").innerHTML = svg;
+
+  const hot = [...ALL_NUMS].sort((a,b)=>stats.freq[b]-stats.freq[a]).slice(0,5);
+  const cold = [...ALL_NUMS].sort((a,b)=>stats.freq[a]-stats.freq[b]).slice(0,5);
+  document.getElementById("hot-balls").innerHTML = hot.map(n=>
+    '<div class="ball-item">'+ballHTML(n,"main","sm")+'<span class="ball-freq l7-mono">'+stats.freq[n]+S.timesSuffix+'</span></div>').join("");
+  document.getElementById("cold-balls").innerHTML = cold.map(n=>
+    '<div class="ball-item">'+ballHTML(n,"main","sm")+'<span class="ball-freq l7-mono">'+stats.freq[n]+S.timesSuffix+'</span></div>').join("");
+}
+
+/* ---------- render: generator ---------- */
+function renderSavedPicks(){
+  const listEl = document.getElementById("saved-list");
+  if(!savedPicks.length){ listEl.innerHTML = '<p class="saved-empty">'+S.savedListEmpty+'</p>'; return; }
+  let html = "";
+  [...savedPicks].reverse().forEach(p=>{
+    const modeLabel = p.mode==="hot" ? S.savedModeHot : S.savedModeCrypto;
+    html += '<div class="saved-item">'
+      + '<span class="saved-tag">'+modeLabel+'</span>'
+      + '<span class="saved-nums l7-mono">'+p.main.map(pad2).join(" ")+'</span>'
+      + '<span class="saved-nums l7-mono" style="color:var(--kin)">· '+p.bonus.map(pad2).join(" ")+'</span>'
+      + '<button class="saved-del" data-saved-del="'+p.id+'" type="button" aria-label="'+S.savedDeleteAria+'">'+svgIcon("x")+'</button>'
+      + '</div>';
+  });
+  listEl.innerHTML = html;
+  document.querySelectorAll("[data-saved-del]").forEach(btn=>{
+    btn.addEventListener("click", async ()=>{
+      const id = btn.getAttribute("data-saved-del");
+      savedPicks = savedPicks.filter(p=>String(p.id)!==id);
+      await storageSet(SAVED_PICKS_KEY, JSON.stringify(savedPicks));
+      renderSavedPicks();
+    });
+  });
+}
+
+function renderGeneratorStatic(){
+  document.getElementById("disclaimer").innerHTML = genMode==="crypto" ? "<p>"+S.disclaimerCrypto+"</p>" : "<p>"+S.disclaimerHot(getAllDraws().length)+"</p>";
+}
+
+function renderAll(){ renderTable(); renderStats(); renderSavedPicks(); renderGeneratorStatic(); }
+
+/* ---------- events: tabs ---------- */
+document.querySelectorAll(".tab-btn").forEach(btn=>{
+  btn.addEventListener("click", ()=>{
+    document.querySelectorAll(".tab-btn").forEach(b=>b.classList.remove("active"));
+    document.querySelectorAll(".tab-panel").forEach(p=>p.classList.remove("active"));
+    btn.classList.add("active");
+    document.getElementById("tab-"+btn.getAttribute("data-tab")).classList.add("active");
+  });
+});
+
+/* ---------- events: year filter ---------- */
+document.querySelectorAll("#year-filters .pill").forEach(btn=>{
+  btn.addEventListener("click", ()=>{
+    yearFilter = btn.getAttribute("data-year");
+    document.querySelectorAll("#year-filters .pill").forEach(b=>b.classList.remove("active"));
+    btn.classList.add("active");
+    renderTable();
+  });
+});
+
+/* ---------- events: add form ---------- */
+const formEl = document.getElementById("add-form");
+document.getElementById("toggle-form-btn").addEventListener("click", ()=>{
+  const showing = formEl.style.display !== "none";
+  formEl.style.display = showing ? "none" : "block";
+  document.getElementById("form-error").style.display = "none";
+});
+
+document.getElementById("save-draw-btn").addEventListener("click", async ()=>{
+  const fDate = document.getElementById("f-date").value;
+  const fNo = parseInt(document.getElementById("f-no").value,10);
+  const main = parseNums(document.getElementById("f-main").value);
+  const bonus = parseNums(document.getElementById("f-bonus").value);
+  const obsRaw = document.getElementById("f-obs").value.trim();
+  const errEl = document.getElementById("form-error");
+  function showErr(msg){ errEl.textContent = msg; errEl.style.display = "block"; }
+
+  if(!fDate){ showErr(S.err.date); return; }
+  if(!fNo || fNo<1){ showErr(S.err.no); return; }
+  if(main.length!==7 || main.some(n=>!Number.isInteger(n)||n<1||n>37)){ showErr(S.err.mainCount); return; }
+  if(new Set(main).size!==7){ showErr(S.err.mainDup); return; }
+  if(bonus.length!==2 || bonus.some(n=>!Number.isInteger(n)||n<1||n>37)){ showErr(S.err.bonusCount); return; }
+  if(new Set(bonus).size!==2 || bonus.some(n=>main.includes(n))){ showErr(S.err.bonusDup); return; }
+  if(getAllDraws().some(d=>d.n===fNo)){ showErr(S.err.dup(fNo)); return; }
+
+  const entry = { d: fDate, n: fNo, m: [...main].sort((a,b)=>a-b), b: [...bonus].sort((a,b)=>a-b),
+    o: { pt: obsRaw, en: obsRaw, ja: obsRaw } };
+  userDraws.push(entry);
+  userDraws.sort((a,b)=> a.d<b.d?-1:1);
+  await storageSet(USER_DRAWS_KEY, JSON.stringify(userDraws));
+  ["f-date","f-no","f-main","f-bonus","f-obs"].forEach(id=>document.getElementById(id).value="");
+  errEl.style.display = "none";
+  formEl.style.display = "none";
+  renderAll();
+});
+
+/* ---------- events: clear ---------- */
+document.getElementById("clear-btn").addEventListener("click", async (e)=>{
+  if(!confirmClearArmed){
+    confirmClearArmed = true;
+    e.target.closest("button").innerHTML = S.confirmClear;
+    e.target.closest("button").classList.add("active");
+    return;
+  }
+  userDraws = [];
+  confirmClearArmed = false;
+  await storageDelete(USER_DRAWS_KEY);
+  renderAll();
+  const btn = document.getElementById("clear-btn");
+  btn.innerHTML = svgIcon("trash") + " " + S.clear;
+  btn.classList.remove("active");
+});
+
+/* ---------- events: generator mode ---------- */
+document.querySelectorAll("#mode-row .pill").forEach(btn=>{
+  btn.addEventListener("click", ()=>{
+    genMode = btn.getAttribute("data-mode");
+    document.querySelectorAll("#mode-row .pill").forEach(b=>b.classList.remove("active"));
+    btn.classList.add("active");
+    renderGeneratorStatic();
+  });
+});
+
+/* ---------- events: generate ---------- */
+let animSeq = 0;
+document.getElementById("generate-btn").addEventListener("click", ()=>{
+  const stats = computeStats(getAllDraws());
+  let main;
+  if(genMode==="hot"){
+    const weights = ALL_NUMS.map(n=>stats.freq[n]+1);
+    main = pickWeighted(ALL_NUMS, weights, 7);
+  } else { main = pickUniform(ALL_NUMS, 7); }
+  main.sort((a,b)=>a-b);
+  const rest = ALL_NUMS.filter(n=>!main.includes(n));
+  let bonus;
+  if(genMode==="hot"){
+    const wB = rest.map(n=>stats.freqBonus[n]+1);
+    bonus = pickWeighted(rest, wB, 2);
+  } else { bonus = pickUniform(rest, 2); }
+  bonus.sort((a,b)=>a-b);
+  currentCombo = { main, bonus, mode: genMode };
+  animSeq++;
+
+  const wrap = document.getElementById("combo-wrap");
+  wrap.style.display = "block";
+  let html = "";
+  main.forEach((n,i)=>{ html += '<div class="drop" style="animation-delay:'+(i*70)+'ms">'+ballHTML(n,"main","lg")+'</div>'; });
+  html += '<div class="divider"></div>';
+  bonus.forEach((n,i)=>{ html += '<div class="drop" style="animation-delay:'+((main.length+i)*70)+'ms">'+ballHTML(n,"bonus","lg")+'</div>'; });
+  document.getElementById("combo-balls").innerHTML = html;
+
+  document.getElementById("copy-label").textContent = S.copyBtn;
+  document.getElementById("copy-btn").classList.remove("done");
+  document.getElementById("save-pick-label").textContent = S.saveBtn;
+  document.getElementById("save-pick-btn").classList.remove("done");
+});
+
+/* ---------- events: copy ---------- */
+document.getElementById("copy-btn").addEventListener("click", async ()=>{
+  if(!currentCombo) return;
+  const text = S.mainLabel+": "+currentCombo.main.map(pad2).join(" ")+" | "+S.bonusLabel+": "+currentCombo.bonus.map(pad2).join(" ");
+  try{
+    await navigator.clipboard.writeText(text);
+  } catch(e){
+    try{
+      const ta=document.createElement("textarea"); ta.value=text; document.body.appendChild(ta);
+      ta.select(); document.execCommand("copy"); document.body.removeChild(ta);
+    } catch(e2){ return; }
+  }
+  document.getElementById("copy-label").textContent = S.copiedBtn;
+  document.getElementById("copy-btn").classList.add("done");
+});
+
+/* ---------- events: save pick ---------- */
+document.getElementById("save-pick-btn").addEventListener("click", async ()=>{
+  if(!currentCombo) return;
+  savedPicks.push({ id: Date.now()+"-"+Math.floor(Math.random()*1000), main: currentCombo.main, bonus: currentCombo.bonus, mode: currentCombo.mode, ts: new Date().toISOString() });
+  await storageSet(SAVED_PICKS_KEY, JSON.stringify(savedPicks));
+  document.getElementById("save-pick-label").textContent = S.savedDoneBtn;
+  document.getElementById("save-pick-btn").classList.add("done");
+  renderSavedPicks();
+});
+
+/* ---------- icons (inline SVG, no external deps) ---------- */
+function svgIcon(name){
+  const p = {
+    table: '<path d="M3 3h18v18H3z"/><path d="M3 9h18M3 15h18M9 3v18"/>',
+    stats: '<path d="M3 3v18h18"/><path d="M18 17V9M13 17V5M8 17v-4"/>',
+    dice: '<rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8" cy="8" r="1.2"/><circle cx="16" cy="16" r="1.2"/><circle cx="12" cy="12" r="1.2"/>',
+    trash: '<path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14"/>',
+    plus: '<path d="M12 5v14M5 12h14"/>',
+    x: '<path d="M18 6 6 18M6 6l12 12"/>',
+    refresh: '<path d="M21 12a9 9 0 1 1-3-6.7"/><path d="M21 3v6h-6"/>',
+    copy: '<rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/>',
+    bookmark: '<path d="M6 3h12v18l-6-4-6 4Z"/>',
+    flame: '<path d="M12 2s5 5 5 10a5 5 0 0 1-10 0c0-2 1-3 1-3s.5 2 2 2c-1-3 1-5 1-7 0 0 1 1 1-2Z"/>',
+    snow: '<path d="M12 2v20M4.9 4.9l14.2 14.2M19.1 4.9 4.9 19.1M2 12h20M6 6l2 2M18 18l-2-2M6 18l2-2M18 6l-2 2"/>',
+  }[name] || '';
+  return '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px">'+p+'</svg>';
+}
+
+loadAll();
+</script>
+</body>
+</html>
