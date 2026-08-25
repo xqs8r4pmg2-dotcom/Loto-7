@@ -322,7 +322,7 @@ function ballHTML(n, variant, size){
 /* ---------- data loading ---------- */
 async function loadAll(){
   try{
-    const res = await fetch("draws.json");
+    const res = await fetch("draws.json?v=" + Date.now(), { cache: "no-store" });
     if(!res.ok) throw new Error("bad response");
     BASE_DRAWS = await res.json();
   } catch(e){
