@@ -144,7 +144,7 @@ footer p{font-size:.75rem;line-height:1.6;color:rgba(51,69,111,.75);}
 </header>
 
 <main>
-  <div class="fetch-error" id="fetch-error">data/draws.json を読み込めませんでした。このファイルを直接開いた場合（file://）は、ローカルサーバーを起動するか（例："python3 -m http.server"）、GitHub Pagesで公開してください。</div>
+  <div class="fetch-error" id="fetch-error">draws.json を読み込めませんでした（プロジェクトのルートフォルダ、Port/・Engl/・Jap/ フォルダと同じ階層にファイルがあるか確認してください）。このファイルを直接開いた場合（file://）は、ローカルサーバーを起動するか（例："python3 -m http.server"）、GitHub Pagesで公開してください。</div>
 
   <!-- ===== TABLE TAB ===== -->
   <section class="tab-panel active" id="tab-table">
@@ -157,6 +157,9 @@ footer p{font-size:.75rem;line-height:1.6;color:rgba(51,69,111,.75);}
       <div class="pill-group">
         <button class="pill danger" id="clear-btn" type="button" style="display:none"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14"/></svg> クリア</button>
         <button class="pill pill-gold" id="toggle-form-btn" type="button"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><path d="M12 5v14M5 12h14"/></svg> 新規追加</button>
+        <button class="pill" id="backup-btn" type="button"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg> バックアップ</button>
+        <button class="pill" id="restore-btn" type="button"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><path d="M12 21V9"/><path d="m7 14 5-5 5 5"/><path d="M5 3h14"/></svg> 復元</button>
+        <input type="file" id="restore-input" accept="application/json" style="display:none">
       </div>
     </div>
 
@@ -246,11 +249,11 @@ footer p{font-size:.75rem;line-height:1.6;color:rgba(51,69,111,.75);}
 
 <script>
 const LANG = "ja";
-const S = {"htmlLang":"ja","title":"ロト7 ー 日本の宝くじ","headerTitle":"ロト7","kanjiAccent":"","subtitle":"日本の宝くじ","seal":"当","updatedThrough":"最終更新：","description":"2025年1月から現在までのロト7抽せん結果を確認できます。出現頻度を分析し、予想番号を生成しましょう。本数字7個＋ボーナス数字2個。","tabs":{"table":"結果一覧","stats":"統計","generator":"番号ジェネレーター"},"yearAll":"すべての年","clear":"クリア","confirmClear":"本当にクリア？","addNew":"新規追加","close":"閉じる","formTitle":"新規結果","formDate":"抽せん日","formNo":"回号（例：683）","formMain":"本数字7個（半角スペース区切り）","formBonus":"ボーナス数字2個","formObs":"備考（任意）","formObsPh":"例：1等1口・キャリーオーバー","formSave":"結果を保存","formHelp":"追加した結果はブラウザに保存され、統計とジェネレーターに反映されます。","err":{"date":"抽せん日を入力してください。","no":"回号を入力してください（例：683）。","mainCount":"本数字は1〜37の範囲で7個入力してください。","mainDup":"本数字を重複させることはできません。","bonusCount":"ボーナス数字は1〜37の範囲で2個入力してください。","bonusDup":"ボーナス数字は重複したり本数字と同じにはできません。","dup":(no) => `第${no}回はすでに登録されています。`},"th":{"date":"抽せん日","draw":"回号","main":"本数字","bonus":"ボーナス","notes":"備考"},"newBadge":"新規","loading":"保存済みの結果を読み込み中…","gap":(a, b) => `欠落：第${a}回〜第${b}回のデータがありません — 公式サイトでご確認いただくか、手動で追加してください`,"sourceNote":"複数の情報源で照合済み・実際の利用前には必ず公式サイト（みずほ銀行／takarakuji-official.jp）でご確認ください。","statsTitle":"数字の出現頻度","statsSub":(n) => `本数字7個における出現回数・全${n}回・1〜37`,"mostDrawn":"最多出現","leastDrawn":"最少出現","hotTitle":"よく出る数字","hotSub":"出現数が多い","coldTitle":"あまり出ない数字","coldSub":"出現数が少ない","timesSuffix":"回","genTitle":"番号ジェネレーター","genSub":"ロト7の組み合わせを生成します — 本数字7個＋ボーナス数字2個。","modeCrypto":"安全な乱数","modeHot":"頻出数字を重視","generateBtn":"新しい組み合わせを生成","copyBtn":"数字をコピー","copiedBtn":"コピーしました！","saveBtn":"この予想を保存","savedDoneBtn":"保存しました！","savedListTitle":"保存した予想番号","savedListEmpty":"まだ保存された予想番号はありません — 組み合わせを生成して「この予想を保存」を押してください。","savedModeCrypto":"ランダム","savedModeHot":"頻出重視","savedDeleteAria":"保存した予想を削除","disclaimerCrypto":"このジェネレーターはブラウザの暗号学的に安全な乱数（crypto.getRandomValues）を使用しています。過去の抽せんデータから結果を「予測」することはありません — 公正な宝くじではそれ自体が不可能です。","disclaimerHot":(n) => `「頻出数字を重視」モード：過去の履歴（全${n}回）で出現回数が多い数字ほど、シミュレーションで選ばれやすくなります。重要：これは実際の当選確率を高めるものではありません — 抽せんは毎回独立しており、すべての数字は同じ確率です。`,"footerText":"ロト7の1等当せん確率は、組み合わせにかかわらず常に1／10,295,472です。統計・娯楽目的のツールです・節度を持ってお楽しみください。","fetchError":"data/draws.json を読み込めませんでした。このファイルを直接開いた場合（file://）は、ローカルサーバーを起動するか（例：\"python3 -m http.server\"）、GitHub Pagesで公開してください。","langLabel":"言語","dateFmt":(iso) => { const [y, m, d] = iso.split('-'); return `${y}年${parseInt(m,10)}月${parseInt(d,10)}日`; },"mainLabel":"本数字","bonusLabel":"ボーナス"};
+const S = {"htmlLang":"ja","title":"ロト7 ー 日本の宝くじ","headerTitle":"ロト7","kanjiAccent":"","subtitle":"日本の宝くじ","seal":"当","updatedThrough":"最終更新：","description":"2025年1月から現在までのロト7抽せん結果を確認できます。出現頻度を分析し、予想番号を生成しましょう。本数字7個＋ボーナス数字2個。","tabs":{"table":"結果一覧","stats":"統計","generator":"番号ジェネレーター"},"yearAll":"すべての年","clear":"クリア","confirmClear":"本当にクリア？","addNew":"新規追加","close":"閉じる","formTitle":"新規結果","formDate":"抽せん日","formNo":"回号（例：683）","formMain":"本数字7個（半角スペース区切り）","formBonus":"ボーナス数字2個","formObs":"備考（任意）","formObsPh":"例：1等1口・キャリーオーバー","formSave":"結果を保存","formHelp":"追加した結果はブラウザに保存され、統計とジェネレーターに反映されます。","err":{"date":"抽せん日を入力してください。","no":"回号を入力してください（例：683）。","mainCount":"本数字は1〜37の範囲で7個入力してください。","mainDup":"本数字を重複させることはできません。","bonusCount":"ボーナス数字は1〜37の範囲で2個入力してください。","bonusDup":"ボーナス数字は重複したり本数字と同じにはできません。","dup":(no) => `第${no}回はすでに登録されています。`},"th":{"date":"抽せん日","draw":"回号","main":"本数字","bonus":"ボーナス","notes":"備考"},"newBadge":"新規","loading":"保存済みの結果を読み込み中…","gap":(a, b) => `欠落：第${a}回〜第${b}回のデータがありません — 公式サイトでご確認いただくか、手動で追加してください`,"sourceNote":"複数の情報源で照合済み・実際の利用前には必ず公式サイト（みずほ銀行／takarakuji-official.jp）でご確認ください。","statsTitle":"数字の出現頻度","statsSub":(n) => `本数字7個における出現回数・全${n}回・1〜37`,"mostDrawn":"最多出現","leastDrawn":"最少出現","hotTitle":"よく出る数字","hotSub":"出現数が多い","coldTitle":"あまり出ない数字","coldSub":"出現数が少ない","timesSuffix":"回","genTitle":"番号ジェネレーター","genSub":"ロト7の組み合わせを生成します — 本数字7個＋ボーナス数字2個。","modeCrypto":"安全な乱数","modeHot":"頻出数字を重視","generateBtn":"新しい組み合わせを生成","copyBtn":"数字をコピー","copiedBtn":"コピーしました！","saveBtn":"この予想を保存","savedDoneBtn":"保存しました！","savedListTitle":"保存した予想番号","savedListEmpty":"まだ保存された予想番号はありません — 組み合わせを生成して「この予想を保存」を押してください。","savedModeCrypto":"ランダム","savedModeHot":"頻出重視","savedDeleteAria":"保存した予想を削除","disclaimerCrypto":"このジェネレーターはブラウザの暗号学的に安全な乱数（crypto.getRandomValues）を使用しています。過去の抽せんデータから結果を「予測」することはありません — 公正な宝くじではそれ自体が不可能です。","disclaimerHot":(n) => `「頻出数字を重視」モード：過去の履歴（全${n}回）で出現回数が多い数字ほど、シミュレーションで選ばれやすくなります。重要：これは実際の当選確率を高めるものではありません — 抽せんは毎回独立しており、すべての数字は同じ確率です。`,"footerText":"ロト7の1等当せん確率は、組み合わせにかかわらず常に1／10,295,472です。統計・娯楽目的のツールです・節度を持ってお楽しみください。","fetchError":"draws.json を読み込めませんでした（プロジェクトのルートフォルダ、Port/・Engl/・Jap/ フォルダと同じ階層にあるか確認してください）。","backupBtn":"バックアップ","restoreBtn":"復元","backupDone":"バックアップを書き出しました！このファイルは大切に保管してください。","restoreConfirm":"現在保存されている結果と予想番号が上書きされます。続けますか？","restoreSuccess":"データを復元しました！","restoreInvalid":"バックアップファイルが無効か破損しています。","langLabel":"言語","dateFmt":(iso) => { const [y, m, d] = iso.split('-'); return `${y}年${parseInt(m,10)}月${parseInt(d,10)}日`; },"mainLabel":"本数字","bonusLabel":"ボーナス"};
 const COLORS = {"washi":"#EAE6D9","washiDark":"#DFD9C8","paper":"#F7F3E8","sumi":"#23283A","kon":"#33456F","kin":"#C69A3B","hanko":"#B23A2E"};
 const ALL_NUMS = Array.from({length:37}, (_,i)=>i+1);
-const USER_DRAWS_KEY = "loto7:user_draws:" + LANG;
-const SAVED_PICKS_KEY = "loto7:saved_picks:" + LANG;
+const USER_DRAWS_KEY = "loto7:user_draws";
+const SAVED_PICKS_KEY = "loto7:saved_picks";
 
 let BASE_DRAWS = [];
 let userDraws = [];
@@ -322,7 +325,7 @@ function ballHTML(n, variant, size){
 /* ---------- data loading ---------- */
 async function loadAll(){
   try{
-    const res = await fetch("draws.json?v=" + Date.now(), { cache: "no-store" });
+    const res = await fetch("../draws.json?v=" + Date.now(), { cache: "no-store" });
     if(!res.ok) throw new Error("bad response");
     BASE_DRAWS = await res.json();
   } catch(e){
@@ -513,6 +516,50 @@ document.getElementById("clear-btn").addEventListener("click", async (e)=>{
   const btn = document.getElementById("clear-btn");
   btn.innerHTML = svgIcon("trash") + " " + S.clear;
   btn.classList.remove("active");
+});
+
+/* ---------- backup / restore ---------- */
+function showStorageMsg(text){
+  const el = document.getElementById("storage-msg");
+  el.textContent = text;
+  el.style.display = "block";
+  clearTimeout(showStorageMsg._t);
+  showStorageMsg._t = setTimeout(()=>{ el.style.display = "none"; }, 4000);
+}
+document.getElementById("backup-btn").addEventListener("click", ()=>{
+  const payload = { app:"loto7", version:1, exportedAt:new Date().toISOString(), userDraws, savedPicks };
+  const blob = new Blob([JSON.stringify(payload, null, 2)], {type:"application/json"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "loto7-backup-" + new Date().toISOString().slice(0,10) + ".json";
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(()=>URL.revokeObjectURL(url), 1000);
+  showStorageMsg(S.backupDone);
+});
+document.getElementById("restore-btn").addEventListener("click", ()=>{
+  document.getElementById("restore-input").click();
+});
+document.getElementById("restore-input").addEventListener("change", async (e)=>{
+  const file = e.target.files[0];
+  e.target.value = "";
+  if(!file) return;
+  if(!confirm(S.restoreConfirm)) return;
+  try{
+    const text = await file.text();
+    const data = JSON.parse(text);
+    if(!data || !Array.isArray(data.userDraws) || !Array.isArray(data.savedPicks)) throw new Error("shape");
+    userDraws = data.userDraws;
+    savedPicks = data.savedPicks;
+    await storageSet(USER_DRAWS_KEY, JSON.stringify(userDraws));
+    await storageSet(SAVED_PICKS_KEY, JSON.stringify(savedPicks));
+    renderAll();
+    showStorageMsg(S.restoreSuccess);
+  } catch(err){
+    showStorageMsg(S.restoreInvalid);
+  }
 });
 
 /* ---------- events: generator mode ---------- */
